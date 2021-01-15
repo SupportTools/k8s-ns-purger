@@ -13,6 +13,7 @@ spec:
       template:
         spec:
           serviceAccountName: k8s-ns-purger
+          restartPolicy: Never
           containers:
           - env:
             - name: APP_LABEL
