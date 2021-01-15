@@ -1,22 +1,27 @@
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1beta1
+kind: CronJob
 metadata:
   labels:
     app: k8s-ns-purger
   name: k8s-ns-purger
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: k8s-ns-purger
-  template:
-    metadata:
-      labels:
-        app: k8s-ns-purger
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 0
+  jobTemplate:
     spec:
-      serviceAccountName: k8s-ns-purger
-      containers:
-      - image: supporttools/k8s-ns-purger:BUILD_NUMBER
-        imagePullPolicy: IfNotPresent
-        name: k8s-ns-purger
+      template:
+        spec:
+          serviceAccountName: k8s-ns-purger
+          restartPolicy: Never
+          containers:
+          - env:
+            - name: APP_LABEL
+              value: registry
+            - name: PURGE_AGE
+              value: '8 hour'
+            image: supporttools/k8s-ns-purger:BUILD_NUMBER
+            imagePullPolicy: IfNotPresent
+            name: k8s-ns-purger
+  schedule: '0 * * * *'
+  successfulJobsHistoryLimit: 3

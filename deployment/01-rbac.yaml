@@ -10,7 +10,7 @@ metadata:
   name: k8s-ns-purger
 rules:
 - apiGroups: [""]
-  resources: ["namespace"]
+  resources: ["namespaces"]
   verbs: ["get", "list", "delete"]
 ---
 kind: ClusterRoleBinding
@@ -24,4 +24,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: k8s-ns-purger
-  namespace: kube-system
+  namespace: registry-infra
