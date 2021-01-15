@@ -1,0 +1,45 @@
+---
+kind: pipeline
+type: kubernetes
+name: k8s-NS-Purger
+
+steps:
+  - name: docker-build
+    image: plugins/docker
+    settings:
+      repo: supporttools/k8s-ns-purger
+      tags:
+        - ${DRONE_BUILD_NUMBER}
+        - ${DRONE_COMMIT_BRANCH}
+        - latest
+      username:
+        from_secret: docker-username
+      password:
+        from_secret: docker-password
+
+  - name: customize-kube-files
+    image: supporttools/kube-builder
+    commands:
+      - bash ./deploy.sh
+    when:
+     event:
+     - deployment
+     - promote
+     target:
+     - production
+
+  - name: deploy
+    image: cube8021/drone-kubectl
+    settings:
+      kubernetes_server:
+        from_secret: k8s_server
+      kubernetes_token:
+        from_secret: k8s_token
+    commands:
+      - kubectl apply -n registry-infra -f ./deployment-ready/
+    when:
+     event:
+     - deployment
+     - promote
+     target:
+     - production
