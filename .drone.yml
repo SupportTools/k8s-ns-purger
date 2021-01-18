@@ -6,6 +6,7 @@ name: k8s-NS-Purger
 steps:
   - name: docker-build-public
     image: plugins/docker
+    settings:
       dry_run: true
       repo: supporttools/k8s-ns-purger
       tags:
@@ -58,4 +59,3 @@ steps:
      - promote
      target:
      - production
-     
