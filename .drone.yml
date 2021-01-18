@@ -43,3 +43,17 @@ steps:
      - promote
      target:
      - production
+
+  - name: slack
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: slack_webhook
+      channel: engineering
+      link_names: true
+      template: >
+        {{#success build.status}}
+          k8s-NS-Purger build {{build.number}} succeeded. Good job. <@engineering>
+        {{else}}
+          k8s-NS-Purger build {{build.number}} failed. Fix me please. <@engineering>
+        {{/success}}
