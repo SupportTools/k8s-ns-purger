@@ -5,10 +5,9 @@ then
   PURGE_AGE="8 hour"
 fi
 
-echo "App Label: $APP_LABEL"
 echo "Purge Age: $PURGE_AGE"
 
-kubectl get ns -l app="$APP_LABEL",ns-purge=true -o go-template --template '{{range .items}}{{.metadata.name}},{{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | while IFS=, read -r namespace timestamp
+kubectl get ns -l ns-purge=true -o go-template --template '{{range .items}}{{.metadata.name}},{{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | while IFS=, read -r namespace timestamp
 do
   echo "#################################################################"
   echo "Namespace: $namespace"
