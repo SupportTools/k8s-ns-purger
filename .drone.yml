@@ -4,17 +4,7 @@ type: kubernetes
 name: k8s-NS-Purger
 
 steps:
-  - name: docker-build-public
-    image: plugins/docker
-    settings:
-      dry_run: true
-      repo: supporttools/k8s-ns-purger
-      tags:
-        - ${DRONE_BUILD_NUMBER}
-        - ${DRONE_COMMIT_BRANCH}
-        - latest
-
-  - name: docker-build-private
+  - name: docker-build
     image: plugins/docker
     settings:
       repo: supporttools/k8s-ns-purger
