@@ -16,8 +16,6 @@ spec:
           restartPolicy: Never
           containers:
           - env:
-            - name: APP_LABEL
-              value: registry
             - name: PURGE_AGE
               value: '8 hour'
             image: supporttools/k8s-ns-purger:BUILD_NUMBER

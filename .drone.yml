@@ -42,7 +42,7 @@ steps:
       kubernetes_token:
         from_secret: k8s_token
     commands:
-      - kubectl apply -n registry-infra -f ./deployment-ready/
+      - kubectl apply -n k8s-ns-purger -f ./deployment-ready/
     when:
      event:
      - deployment
