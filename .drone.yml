@@ -42,6 +42,7 @@ steps:
       kubernetes_token:
         from_secret: k8s_token
     commands:
+      - if ! kubectl get ns k8s-ns-purger; then kubectl create ns k8s-ns-purger; fi
       - kubectl apply -n k8s-ns-purger -f ./deployment-ready/
     when:
      event:
