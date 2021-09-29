@@ -12,7 +12,6 @@ steps:
         - ${DRONE_BUILD_NUMBER}
         - ${DRONE_COMMIT_BRANCH}
         - latest
-      cache_from: "supporttools/k8s-ns-purger:latest"
       username:
         from_secret: docker-username
       password:
