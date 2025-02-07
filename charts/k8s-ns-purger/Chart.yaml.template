@@ -1,0 +1,17 @@
+apiVersion: v2
+name: k8s-ns-purger
+version: ${CHART_VERSION}
+appVersion: ${APP_VERSION}
+description: A Helm chart for k8s-ns-purger, an automated namespace purging tool for Kubernetes.
+keywords:
+  - kubernetes
+  - namespace
+  - cleanup
+  - automation
+home: https://support.tools
+sources:
+  - https://github.com/supporttools/k8s-ns-purger
+maintainers:
+  - name: mattmattox
+    email: mmattox@support.tools
+icon: https://cdn.support.tools/k8s-ns-purger/logo.png

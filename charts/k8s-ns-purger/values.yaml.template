@@ -1,0 +1,54 @@
+# Default values for k8s-ns-purger.
+
+settings:
+  debug: false
+  purgeInterval: 3600   # Time in seconds between purge runs (1 hour)
+  purgeThreshold: 86400 # Time in seconds before a namespace is considered stale (24 hours)
+  purgeLabel: "k8s-ns-purger=true"
+
+replicaCount: 1
+
+image:
+  repository: supporttools/k8s-ns-purger
+  pullPolicy: IfNotPresent
+  tag: ${IMAGE_TAG}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: "k8s-ns-purger"
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 3000
+  fsGroup: 2000
+
+securityContext:
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 5m
+    memory: 32Mi
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

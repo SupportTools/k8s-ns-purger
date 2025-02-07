@@ -1,18 +1,39 @@
-FROM ubuntu:latest
-MAINTAINER Matthew Mattox <mmattox@support.tools>
+# Use golang alpine image as the builder stage
+FROM golang:1.23.5-alpine AS builder
 
-ENV DEBIAN_FRONTEND=noninteractive
+# Install git and other necessary tools
+RUN apk update && apk add --no-cache git bash
 
-RUN apt-get update && apt-get install -yq --no-install-recommends \
-    apt-utils \
-    curl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Set the Current Working Directory inside the container
+WORKDIR /src
 
-## Install kubectl
-RUN curl -kLO "https://storage.googleapis.com/kubernetes-release/release/$(curl -ks https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" && \
-chmod u+x kubectl && \
-mv kubectl /usr/local/bin/kubectl
+# Copy go.mod and go.sum files first to leverage Docker cache
+COPY go.mod go.sum ./
 
-COPY *.sh /root/
-RUN chmod +x /root/*.sh
-CMD /root/cleanup_ns.sh
+# Copy the rest of the application source code
+COPY . .
+
+# Build arguments for versioning
+ARG VERSION
+ARG GIT_COMMIT
+ARG BUILD_DATE
+
+# Build the Go app with static linking
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -a -ldflags "-s -w \
+    -X github.com/supporttools/k8s-ns-purger/pkg/version.Version=${VERSION} \
+    -X github.com/supporttools/k8s-ns-purger/pkg/version.GitCommit=${GIT_COMMIT} \
+    -X github.com/supporttools/k8s-ns-purger/pkg/version.BuildTime=${BUILD_DATE}" \
+    -o /kube-api-proxy
+
+# Use a minimal base image
+FROM alpine:3.18
+
+# Install ca-certificates and other necessary tools
+RUN apk add --no-cache ca-certificates bash curl
+
+# Copy the statically compiled executable
+COPY --from=builder /kube-api-proxy /kube-api-proxy
+
+# Set the entrypoint
+ENTRYPOINT ["/kube-api-proxy"]

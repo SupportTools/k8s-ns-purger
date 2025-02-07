@@ -1,0 +1,28 @@
+questions:
+  - variable: settings.debug
+    default: false
+    description: "Enable debug logging for troubleshooting."
+    label: "Enable Debug Logging"
+    type: boolean
+    group: "General Settings"
+
+  - variable: settings.purgeInterval
+    default: 3600
+    description: "Time in seconds between purge runs (e.g., 3600 for 1 hour)."
+    label: "Purge Interval (Seconds)"
+    type: int
+    group: "Purge Settings"
+
+  - variable: settings.purgeThreshold
+    default: 86400
+    description: "Time in seconds before a namespace is considered stale (e.g., 86400 for 24 hours)."
+    label: "Purge Threshold (Seconds)"
+    type: int
+    group: "Purge Settings"
+
+  - variable: settings.purgeLabel
+    default: "k8s-ns-purger=true"
+    description: "Label selector for namespaces to be considered for purging."
+    label: "Namespace Purge Label Selector"
+    type: string
+    group: "Purge Settings"
