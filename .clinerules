@@ -1,0 +1,197 @@
+# k8s-ns-purger .clinerules
+
+## Project Patterns
+
+### Code Organization
+1. **File Structure**
+   - Main application logic in root directory
+   - Helm charts in /charts directory
+   - Documentation in memory-bank/
+   - Assets in /assets directory
+
+2. **Go Patterns**
+   - Go version: 1.23.0
+   - Use Go modules
+   - Follow standard Go project layout
+   - Implement interfaces for testability
+
+### Development Workflow
+1. **Code Changes**
+   - Update memory bank before implementing changes
+   - Follow Go best practices and idioms
+   - Maintain backward compatibility
+   - Consider resource efficiency
+
+2. **Testing**
+   - Write tests before implementation
+   - Use testify for assertions
+   - Mock Kubernetes client interactions
+   - Test error scenarios thoroughly
+
+3. **Documentation**
+   - Update memory bank after significant changes
+   - Keep technical documentation current
+   - Document configuration options
+   - Include usage examples
+
+## Implementation Guidelines
+
+### Core Patterns
+1. **Controller Pattern**
+   ```go
+   // Main loop pattern
+   for {
+       if err := deleteNamespaces(); err != nil {
+           logger.Errorf("Error: %v", err)
+       }
+       time.Sleep(interval)
+   }
+   ```
+
+2. **Configuration Pattern**
+   ```go
+   // Environment variables take precedence over defaults
+   type Config struct {
+       Debug        bool   `env:"DEBUG" default:"false"`
+       PurgeAge     string `env:"PURGE_AGE" default:"8h"`
+       Interval     string `env:"INTERVAL" default:"1h"`
+       LabelSelector string `env:"LABEL_SELECTOR" default:"k8s-ns-purger=true"`
+   }
+   ```
+
+3. **Error Handling Pattern**
+   ```go
+   // Always log errors with context
+   if err != nil {
+       logger.WithFields(logrus.Fields{
+           "component": "controller",
+           "operation": "deleteNamespaces",
+       }).Errorf("Failed: %v", err)
+       return err
+   }
+   ```
+
+### Security Practices
+1. **Container Security**
+   - Always run as non-root
+   - Use read-only root filesystem
+   - Prevent privilege escalation
+   - Set resource limits
+
+2. **RBAC Configuration**
+   - Use minimal required permissions
+   - Scope to namespace operations
+   - Implement proper service account
+   - Follow least privilege principle
+
+## Tool Usage
+
+### Build Commands
+```bash
+# Local build
+go build -o k8s-ns-purger
+
+# Container build
+docker build -t supporttools/k8s-ns-purger .
+
+# Helm package
+helm package charts/k8s-ns-purger
+```
+
+### Deployment Commands
+```bash
+# Install with Helm
+helm install k8s-ns-purger supporttools/k8s-ns-purger
+
+# Verify deployment
+kubectl get pods -l app=k8s-ns-purger
+```
+
+## Known Challenges
+
+### Resource Management
+1. **API Call Optimization**
+   - Use appropriate intervals
+   - Implement exponential backoff
+   - Handle rate limiting
+   - Cache when possible
+
+2. **Memory Usage**
+   - Clear slices after use
+   - Avoid unnecessary allocations
+   - Use appropriate buffer sizes
+   - Monitor heap usage
+
+### Error Scenarios
+1. **API Errors**
+   - Implement retry logic
+   - Handle transient failures
+   - Log with context
+   - Maintain operation state
+
+2. **Network Issues**
+   - Handle timeouts gracefully
+   - Implement connection retries
+   - Log connectivity issues
+   - Maintain stability
+
+## Configuration Guidelines
+
+### Environment Variables
+```bash
+# Debug mode
+DEBUG=true
+
+# Purge age (duration string)
+PURGE_AGE=8h
+
+# Check interval (duration string)
+INTERVAL=1h
+
+# Label selector
+LABEL_SELECTOR=k8s-ns-purger=true
+```
+
+### Helm Values
+```yaml
+settings:
+  debug: false
+  purgeInterval: 3600
+  purgeThreshold: 28800
+  purgeLabel: k8s-ns-purger=true
+```
+
+## Memory Bank Management
+
+### Update Triggers
+1. New implementation patterns discovered
+2. Significant changes to existing patterns
+3. New challenges or solutions identified
+4. Changes to development workflow
+5. New tool usage patterns established
+
+### Key Files to Update
+1. activeContext.md for current state
+2. progress.md for status changes
+3. systemPatterns.md for new patterns
+4. techContext.md for technical changes
+
+## Project Intelligence
+
+### Critical Paths
+1. Namespace deletion workflow
+2. Configuration management
+3. Error handling and recovery
+4. Resource efficiency
+
+### Key Decisions
+1. Single controller design
+2. In-cluster configuration
+3. Label-based selection
+4. Age-based deletion
+
+### Performance Considerations
+1. API call frequency
+2. Resource consumption
+3. Memory management
+4. Error recovery
